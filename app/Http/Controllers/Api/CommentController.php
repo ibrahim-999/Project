@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function addComment(Request $request)
+    public function createComment(Request $request)
     {
 
         if($request->isMethod('post'))
@@ -23,7 +23,7 @@ class CommentController extends Controller
             $comment->ticket_id = $userdata['ticket_id'];
             $comment->comment = $userdata['comment'];
             $comment->save();
-            return response()->json(['message'=>'Category Added Successfully!']);
+            return response()->json(['message'=>'Comment has been Added Successfully!']);
         }
 
 

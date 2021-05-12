@@ -24,23 +24,33 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 // User Route
 Route::post('adduser',[UserController::class,'addUser']);
 
 //Route For Cities
-Route::get('/city',[CityController::class , 'allcity']);
-Route::get('city/{id}', [CityController::class , 'indexcity']);
+Route::get('/city',[CityController::class , 'allCity']);
+Route::get('city/{id}', [CityController::class , 'indexCity']);
+Route::post('create-city',[CityController::class,'createCity']);
 
 //Route For Categories
-Route::get('/category',[CategoryController::class , 'allcategory']);
-Route::get('category/{id}', [CategoryController::class , 'indexcat']);
-
+Route::get('/category',[CategoryController::class , 'allCategory']);
+Route::get('category/{id}', [CategoryController::class , 'indexCategory']);
+Route::post('/create-category',[CategoryController::class,'createCategory']);
 
 //Role Routes
-Route::post('addrole',[RoleController::class,'addRole']);
+Route::post('create-role',[RoleController::class,'createRole']);
+Route::get('/role',[RoleController::class,'allRoles']);
+Route::get('role/{id}',[RoleController::class,'indexRole']);
+
 //Order Routes
-Route::post('createorder',[OrderController::class,'createOrder']);
+Route::post('create-order',[OrderController::class,'createOrder']);
+Route::get('/order',[OrderController::class,'allOrders']);
+Route::get('order/{id}',[OrderController::class,'indexOrder']);
 //Ticket Routes
-Route::post('createticket',[TicketController::class,'createTicket']);
+Route::post('create-ticket',[TicketController::class,'createTicket']);
+Route::get('/ticket',[TicketController::class,'allTickets']);
+Route::get('ticket/{id}',[TicketController::class,'indexTicket']);
+Route::get('show',[TicketController::class,'storeTicket']);
 //Comment Routes
-Route::post('addcomment',[CommentController::class,'addComment']);
+Route::post('create-comment',[CommentController::class,'createComment']);

@@ -21,8 +21,8 @@ class UserController extends Controller
             $user->phone = $userData['phone'];
             $user->role_id = $userData['role_id'];
             $user->save();
+            $user = User::create($userData);
             return response()->json(['message'=>'User Added Successfully!']);
-
 
         }
     }

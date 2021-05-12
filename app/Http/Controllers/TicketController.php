@@ -56,7 +56,6 @@ class TicketController extends Controller
     }
     public function storeTicket()
     {
-
         $Ticket = Ticket::get();
         $City = City::get();
         $Category = Category::get();
