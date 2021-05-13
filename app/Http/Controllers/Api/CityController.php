@@ -7,13 +7,16 @@ use App\Models\City;
 use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Validator;
+use Image;
+
 
 class CityController extends Controller
 {
     public function allcity()
     {
-        $City=City::get();
-        return response()->json(['city'=>$City],200);
+        $city=City::get();
+        return response()->json(['city'=>$city],200);
     }
     public function indexcity($id)
     {
@@ -27,12 +30,44 @@ class CityController extends Controller
     {
         $city = new  City();
         $citydata = $request->input();
+
+        $rules = [
+            "name"=>"required",
+            "image"=>"image|mimes:jpeg,png",
+        ];
+
+        $customMessage = [
+            "name.required"=>"Name is required",
+            "image.image" =>"Valid image required"
+        ];
+        $validator = Validator::make($citydata,$rules,$customMessage);
+
+        if($validator->fails())
+        {
+            return response()->json($validator->errors(),422);
+        }
+
+        if($request->hasFile('image'))
+        {
+            $image_temp = $request->file('image');
+            if($image_temp->isValid()) {
+                //Get image extension
+                $extension = $image_temp->getClientOriginalExtension();
+                //Generate new image name
+                $imageName = rand(111, 99999).'.'.$extension;
+                $imagePath = 'img/city_images/'.$imageName;
+                //Upload image
+                Image::make($image_temp)->save($imagePath);
+                $city->image = $imageName;
+            }
+        }
+
+
         if ($request->isMethod('post')) {
             $city->name = $citydata['name'];
             $city->desc = $citydata['desc'];
-            $city->image = $citydata['image'];
             $city->save();
-            return response()->json(['message' => 'City has been Added Successfully!']);
+            return response()->json(['message' => 'City has been Added Successfully!'],201);
         }
     }
 }

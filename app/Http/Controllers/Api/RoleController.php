@@ -29,8 +29,22 @@ class RoleController extends Controller
         {
             $roleData = $request->input();
             $role= new Role();
+            $rules = [
+                "name"=>"required"
+            ];
+
+            $customMessage = [
+                "name.required"=>"Name is required"
+            ];
+            $validator = Validator::make($roleData,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
             $role->name = $roleData['name'];
-            return response()->json(['message'=>'Role has been  Added Successfully!']);
+            return response()->json(['message'=>'Role has been  Added Successfully!'],201);
 
         }
     }

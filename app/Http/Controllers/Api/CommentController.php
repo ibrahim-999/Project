@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Validator;
 
 class CommentController extends Controller
 {
@@ -17,16 +18,15 @@ class CommentController extends Controller
 
         if($request->isMethod('post'))
         {
-            $userdata = $request->all();
+            $commentdata = $request->input();
             $comment = new  Comment();
-            $comment->user_id =$userdata['user_id'];
-            $comment->ticket_id = $userdata['ticket_id'];
-            $comment->comment = $userdata['comment'];
+            $comment->user_id =$commentdata['user_id'];
+            $comment->ticket_id = $commentdata['ticket_id'];
+            $comment->comment = $commentdata['comment'];
+            $comment->active = $commentdata['active'];
             $comment->save();
-            return response()->json(['message'=>'Comment has been Added Successfully!']);
+            return response()->json(['message'=>'Comment has been Added Successfully!'],201);
         }
-
-
 
     }
 }

@@ -25,32 +25,34 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::namespace('App\Http\Controllers\API')->group(function (){
 // User Route
-Route::post('adduser',[UserController::class,'addUser']);
+    Route::post('create-user',[UserController::class,'createUser']);
 
 //Route For Cities
-Route::get('/city',[CityController::class , 'allCity']);
-Route::get('city/{id}', [CityController::class , 'indexCity']);
-Route::post('create-city',[CityController::class,'createCity']);
+    Route::get('/city',[CityController::class , 'allCity']);
+    Route::get('city/{id}', [CityController::class , 'indexCity']);
+    Route::post('create-city',[CityController::class,'createCity']);
 
 //Route For Categories
-Route::get('/category',[CategoryController::class , 'allCategory']);
-Route::get('category/{id}', [CategoryController::class , 'indexCategory']);
-Route::post('/create-category',[CategoryController::class,'createCategory']);
+    Route::get('/category',[CategoryController::class , 'allCategory']);
+    Route::get('category/{id}', [CategoryController::class , 'indexCategory']);
+    Route::post('/create-category',[CategoryController::class,'createCategory']);
 
 //Role Routes
-Route::post('create-role',[RoleController::class,'createRole']);
-Route::get('/role',[RoleController::class,'allRoles']);
-Route::get('role/{id}',[RoleController::class,'indexRole']);
+    Route::post('create-role',[RoleController::class,'createRole']);
+    Route::get('/role',[RoleController::class,'allRoles']);
+    Route::get('role/{id}',[RoleController::class,'indexRole']);
 
 //Order Routes
-Route::post('create-order',[OrderController::class,'createOrder']);
-Route::get('/order',[OrderController::class,'allOrders']);
-Route::get('order/{id}',[OrderController::class,'indexOrder']);
+    Route::post('create-order',[OrderController::class,'createOrder']);
+    Route::get('/order',[OrderController::class,'allOrders']);
+    Route::get('order/{id}',[OrderController::class,'indexOrder']);
 //Ticket Routes
-Route::post('create-ticket',[TicketController::class,'createTicket']);
-Route::get('/ticket',[TicketController::class,'allTickets']);
-Route::get('ticket/{id}',[TicketController::class,'indexTicket']);
-Route::get('show',[TicketController::class,'storeTicket']);
+    Route::post('create-ticket',[TicketController::class,'createTicket']);
+    Route::get('/ticket',[TicketController::class,'allTickets']);
+    Route::get('ticket/{id}',[TicketController::class,'indexTicket']);
+    Route::get('show',[TicketController::class,'storeTicket']);
 //Comment Routes
-Route::post('create-comment',[CommentController::class,'createComment']);
+    Route::post('create-comment',[CommentController::class,'createComment']);
+});

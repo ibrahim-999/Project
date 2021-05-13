@@ -8,6 +8,8 @@ use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Validator;
+use Image;
 
 class CategoryController extends Controller
 {
@@ -37,15 +39,46 @@ class CategoryController extends Controller
 
     public function createCategory(Request $request)
     {
-        $category = new  Category();
-        $categorydata = $request->input();
+
         if($request->isMethod('post'))
         {
+            $category = new  Category();
+            $categorydata = $request->input();
+
+            $rules = [
+                "name"=>"required",
+                "image"=>"image|mimes:jpeg,png",
+            ];
+
+            $customMessage = [
+                "name.required"=>"Name is required",
+                "image.image" =>"Valid image required",
+            ];
+            $validator = Validator::make($categorydata,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+            if($request->hasFile('image'))
+            {
+                $image_temp = $request->file('image');
+                if($image_temp->isValid()) {
+                    //Get image extension
+                    $extension = $image_temp->getClientOriginalExtension();
+                    //Generate new image name
+                    $imageName = rand(111, 99999).'.'.$extension;
+                    $imagePath = 'img/category_images/'.$imageName;
+                    //Upload image
+                    Image::make($image_temp)->save($imagePath);
+                    $category->image = $imageName;
+                }
+            }
+
             $category->name = $categorydata['name'];
             $category->desc = $categorydata['desc'];
-            $category->image = $categorydata['image'];
             $category->save();
-            return response()->json(['message'=>'Category Added Successfully!']);
+            return response()->json(['message'=>'Category Added Successfully!'],201);
         }
 
 

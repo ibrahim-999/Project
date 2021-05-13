@@ -4,25 +4,59 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Validator;
 
 class UserController extends Controller
 {
-    public function addUser(Request $request)
+    public function createUser(Request $request)
     {
+
         if($request->isMethod('post'))
         {
             $userData = $request->input();
             $user= new User();
+
+            $rules = [
+                "name" => "required",
+                "email" => "required|email|unique:users",
+                /*"email_verified_at"=> "required|email",*/
+                "password" => "required",
+                "phone" => "required|numeric"
+            ];
+
+            $customMessage = [
+                "name.required" => "Name in required",
+                "email.required" => "Email is required",
+                "email.email" => "Valid Email is required",
+                "email.unique" => "Email is already exists",
+                /*"email_verified_at.required" => "Verified Email is required",
+                "email_verified_at.email" => "Valid Verified Email is required",*/
+                "password.required" => "required",
+                /*"phone.numeric" => "Phone must be numbers",*/
+            ];
+
+            $validator = Validator::make($userData,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
+           /* if(empty($userdata['email_verified_at']))
+            {
+                $userData['email_verified_at'] = "";
+            }*/
+
             $user->name = $userData['name'];
             $user->email = $userData['email'];
             $user->email_verified_at = $userData['email_verified_at'];
-            $user->password = $userData['password'];
+            $user->password = bcrypt($userData['password']);
             $user->phone = $userData['phone'];
             $user->role_id = $userData['role_id'];
             $user->save();
-            $user = User::create($userData);
-            return response()->json(['message'=>'User Added Successfully!']);
+            return response()->json(['message'=>'User Added Successfully!'],201);
 
         }
     }

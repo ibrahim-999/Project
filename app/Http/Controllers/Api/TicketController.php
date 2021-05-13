@@ -31,11 +31,45 @@ class TicketController extends Controller
     public function createTicket(Request $request)
     {
 
-        $ticket = new Ticket();
-
         if($request->isMethod('post'))
         {
+            $ticket = new Ticket();
             $userTicket = $request->input();
+
+            $rules = [
+                "name" => "required",
+                "date_party"  => "required|date|after:today",
+                "image"=>"image|mimes:jpeg,png",
+                "age" => "required",
+                "price_without_vat" => "required|numeric",
+                "price" => "required|numeric",
+                "vat" => "required|numeric",
+                "hour_party" => "required|numeric",
+                "qty" => "required|numeric",
+
+            ];
+
+            $customMessage = [
+                "name.required" =>"Name is required" ,
+                "date_party.required" => "Date is required",
+                "date_party.date" => "Valid date is required",
+                "date-party.after:today"=> "after today",
+                "image.image" =>"Valid image required",
+                "age.required" => "Age is required",
+                "price_without_vat.required" => "Price  is required",
+                "price.required" => "Price is required",
+                "hour_party.required" => "Hour Party is required",
+                "qty.required" => "Quantity is required",
+
+            ];
+
+            $validator = Validator::make($userTicket,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
 
             if($request->hasFile('image'))
             {
@@ -113,39 +147,6 @@ class TicketController extends Controller
                 return response()->json(["status"=>false,'message'=>$message],442);
             }*/
 
-            $rules = [
-                "name" => "required",
-                "date_party"  => "required|date|after:today",
-
-                "age" => "required",
-                "price_without_vat" => "required|numeric",
-                "price" => "required|numeric",
-                "vat" => "required|numeric",
-                "hour_party" => "required|numeric",
-                "qty" => "required|numeric",
-
-            ];
-
-            $customMessage = [
-                "name.required" =>"Name is required" ,
-                "date_party.required" => "Date is required",
-                "date_party.date" => "Valid date is required",
-                "date-party.after:today"=> "after today",
-                "age.required" => "Age is required",
-                "price_without_vat.required" => "Price  is required",
-                "price.required" => "Price is required",
-                "hour_party.required" => "Hour Party is required",
-                "qty.required" => "Quantity is required",
-
-            ];
-
-            $validator = Validator::make($userTicket,$rules,$customMessage);
-
-            if($validator->fails())
-            {
-                return response()->json($validator->errors(),422);
-            }
-
 
             $ticket->name = $userTicket['name'];
             $ticket->city_id = $userTicket['city_id'];
@@ -161,7 +162,7 @@ class TicketController extends Controller
             $ticket->hour_party = $userTicket['hour_party'];
             $ticket->qty = $userTicket['qty'];
             $ticket->save();
-            return response()->json(['message'=>'Ticket has been booked']);
+            return response()->json(['message'=>'Ticket has been booked'],201);
         }
 
     }
