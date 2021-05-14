@@ -84,7 +84,6 @@ class TicketController extends Controller
                     Image::make($image_temp)->save($imagePath);
                     $ticket->image = $imageName;
                 }
-
             }
 
             if($request->hasFile('image2'))
@@ -167,4 +166,57 @@ class TicketController extends Controller
 
     }
 
+    public function searchTicket($name)
+    {
+        return Ticket::where("name","like","%".$name."%")->get();
+    }
+
+
+    public function updateTicketDetails(Request $request,$id)
+    {
+        if($request->isMethod('put'))
+        {
+            $ticketDate = $request->input();
+            $rules = [
+                "name" => "required",
+                "date_party"  => "required|date|after:today",
+                "hour_party" => "required|numeric",
+                "qty" => "required|numeric",
+            ];
+
+            $customMessage = [
+                "name.required" =>"Name is required" ,
+                "date_party.required" => "Date is required",
+                "date_party.date" => "Valid date is required",
+                "date-party.after:today"=> "after today",
+                "hour_party.required" => "Hour Party is required",
+                "qty.required" => "Quantity is required",
+            ];
+            $validator = Validator::make($ticketDate,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
+            Ticket::where('id',$id)->update(['name'=>$ticketDate['name'],'date_party'=>$ticketDate['date_party'],
+                'hour_party'=>$ticketDate['hour_party'],'qty'=>$ticketDate['qty']]);
+            return response()->json(['message'=>'Ticket details has been updated successfully!'],202);
+        }
+    }
+
+    public function deleteTicket($id)
+    {
+        Ticket::where('id',$id)->delete();
+        return response()->json(['message'=>'Ticket has been deleted'],202);
+    }
+    public function deleteTicketWithJson(Request $request)
+    {
+        if($request->isMethod('delete'))
+        {
+            $ticketData = $request->all();
+            Ticket::where('id',$ticketData['id'])->delete();
+            return response()->json(['message'=>'Ticket has been deleted'],200);
+        }
+    }
 }

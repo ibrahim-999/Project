@@ -27,12 +27,7 @@ class TicketController extends Controller
 
         return view('ticket.index', compact('Cityone', 'Cittwo', 'Citythree', 'Cityfour', 'Category', 'City', 'Setting'));
     }
-
-
-
-
-
-
+    
     public function show($id , Request $request)
     {
         $Ticket = Ticket::findOrFail($id);

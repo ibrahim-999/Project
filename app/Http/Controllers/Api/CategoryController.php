@@ -80,8 +80,63 @@ class CategoryController extends Controller
             $category->save();
             return response()->json(['message'=>'Category Added Successfully!'],201);
         }
+    }
 
 
+    public function updateCategoryDetails(Request $request,$id)
+    {
+        if($request->isMethod('put'))
+        {
+            $category = new  Category();
+            $categoryData = $request->input();
+            $rules = [
+                "name"=>"required",
+                "image"=>"image|mimes:jpeg,png",
+            ];
 
+            $customMessage = [
+                "name.required"=>"Name is required",
+                "image.image" =>"Valid image required"
+            ];
+            $validator = Validator::make($categoryData,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
+            if($request->hasFile('image'))
+            {
+                $image_temp = $request->file('image');
+                if($image_temp->isValid()) {
+                    //Get image extension
+                    $extension = $image_temp->getClientOriginalExtension();
+                    //Generate new image name
+                    $imageName = rand(111, 99999).'.'.$extension;
+                    $imagePath = 'img/city_images/'.$imageName;
+                    //Upload image
+                    Image::make($image_temp)->save($imagePath);
+                    $category->image = $imageName;
+                }
+            }
+
+            Category::where('id',$id)->update(['name'=>$categoryData['name'],'image'=>$categoryData['image']]);
+            return response()->json(['message'=>'Category details has been updated successfully!'],202);
+        }
+    }
+
+    public function deleteCategory($id)
+    {
+        Category::where('id',$id)->delete();
+        return response()->json(['message'=>'Category has been deleted'],202);
+    }
+    public function deleteCategoryWithJson(Request $request)
+    {
+        if($request->isMethod('delete'))
+        {
+            $categoryData = $request->all();
+            Category::where('id',$categoryData['id'])->delete();
+            return response()->json(['message'=>'Category has been deleted'],200);
+        }
     }
 }

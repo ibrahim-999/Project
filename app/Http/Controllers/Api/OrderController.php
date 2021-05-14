@@ -67,4 +67,51 @@ class OrderController extends Controller
 
         }
     }
+
+    public function updateOrderDetails(Request $request,$id)
+    {
+        if($request->isMethod('put'))
+        {
+            $orderData = $request->input();
+            $rules = [
+                "qty" => "required|numeric",
+                "order_number"  => "required|unique:orders",
+                "admin_status" => "required",
+                "payment_method" => "required",
+            ];
+
+            $customMessage = [
+                "qty.required" =>"Quantity is required" ,
+                "order_number.required" => "Order Number is required",
+                "order_number.unique"=> "Order Number must be unique",
+                "admin_status.required"=>" Admin Status is required",
+                "payment_method.required" => "Payment Method is required",
+            ];
+            $validator = Validator::make($orderData,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
+            Order::where('id',$id)->update(['qty'=>$orderData['qty'],'order_number'=>$orderData['order_number'],
+                'admin_status'=>$orderData['admin_status'],'payment_method'=>$orderData['payment_method']]);
+            return response()->json(['message'=>'Order details has been updated successfully!'],202);
+        }
+    }
+
+    public function deleteOrder($id)
+    {
+        Order::where('id',$id)->delete();
+        return response()->json(['message'=>'Order has been deleted'],202);
+    }
+    public function deleteOrderWithJson(Request $request)
+    {
+        if($request->isMethod('delete'))
+        {
+            $orderData = $request->all();
+            Order::where('id',$orderData['id'])->delete();
+            return response()->json(['message'=>'Order has been deleted'],200);
+        }
+    }
 }

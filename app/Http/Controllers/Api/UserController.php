@@ -74,4 +74,56 @@ class UserController extends Controller
             return response()->json(['message'=>'User Added Successfully!'],201);
         }
     }
+
+    public function updateUserDetails(Request $request,$id)
+    {
+        if($request->isMethod('put'))
+        {
+            $userData = $request->input();
+            $rules = [
+                "name" => "required",
+                /*"email" => "required|email|unique:users",*/
+                /*"email_verified_at"=> "required|email",*/
+                "password" => "required",
+                "phone" => "required|numeric"
+            ];
+
+            $customMessage = [
+                "name.required" => "Name in required",
+                "email.required" => "Email is required",
+               /* "email.email" => "Valid Email is required",
+                "email.unique" => "Email is already exists",*/
+                /*"email_verified_at.required" => "Verified Email is required",
+                "email_verified_at.email" => "Valid Verified Email is required",*/
+                "password.required" => "required",
+                /*"phone.numeric" => "Phone must be numbers",*/
+            ];
+
+            $validator = Validator::make($userData,$rules,$customMessage);
+
+            if($validator->fails())
+            {
+                return response()->json($validator->errors(),422);
+            }
+
+            User::where('id',$id)->update(['name'=>$userData['name'],
+                'password'=>bcrypt($userData['password']),'phone'=>$userData['phone'],'role_id'=>$userData['role_id']]);
+            return response()->json(['message'=>'User details has been updated successfully!'],202);
+        }
+    }
+    public function deleteUser($id)
+    {
+        User::where('id',$id)->delete();
+        return response()->json(['message'=>'User has been deleted'],202);
+    }
+    public function deleteUserWithJson(Request $request)
+    {
+        if($request->isMethod('delete'))
+        {
+            $userData = $request->all();
+            User::where('id',$userData['id'])->delete();
+            return response()->json(['message'=>'User has been deleted'],204);
+        }
+
+    }
 }
